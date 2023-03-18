@@ -85,7 +85,7 @@ class TicketController extends Controller
         if ($request->has('files'))
         {
 
-            $inputFields['files']       = $request->file('files')->store('attachments', 'public');
+            $inputFields['files']   = $request->file('files')->store('attachments', 'public');
 
         }
 
