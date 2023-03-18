@@ -12,12 +12,13 @@ use App\Models\Response;
 use App\Models\AgentTicket;
 use App\Models\StatusTicket;
 use Illuminate\Http\Request;
+use PHPMailer\PHPMailer\SMTP;
 use App\Models\CategoryTicket;
 use App\Models\PriorityTicket;
 use App\Models\ResponseTicket;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
@@ -85,7 +86,16 @@ class TicketController extends Controller
         if ($request->has('files'))
         {
 
-            $inputFields['files']   = $request->file('files')->store('attachments', 'public');
+            // Get the path to the file
+            $path = $request->file('files')->store('attachments', 's3');
+            
+            // Set visibility => public
+            $disk = Storage::disk('s3'); 
+            Storage::disk('s3')->setVisibility($path, 'public');
+
+            /** @var \Illuminate\Filesystem\FilesystemManager $disk */
+            $url = $disk->url($path);
+            $inputFields['files'] = $url;
 
         }
 
