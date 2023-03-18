@@ -43,7 +43,7 @@ class TicketController extends Controller
             } else {
 
                 return view('tickets.index', [
-                    'tickets' => Ticket::where('email', auth()->user()->email)->get(),
+                    'tickets' => Ticket::latest()->where('email', auth()->user()->email)->paginate(2),
                     'users'   => User::find(auth()->user()->id)
                 ]);
 
@@ -89,37 +89,35 @@ class TicketController extends Controller
 
         }
 
-        // Check if the ticket was created successfully
-        if (Ticket::create($inputFields))
+
+        $store = Ticket::create($inputFields);
+
+        // Setting values for relationship tables in an array
+        $arr = array(
+            'ticket_id'     => Ticket::where('id', $store->id)->get('id'),
+            'category_id'   => Category::where('id', $request->categories)->get(),
+            'priority_id'   => Priority::where('id', $request->priority)->get(),
+            'agent_id'      => Agent::where('id', $request->agent_id)->get(),
+            'status_id'     => Status::where('id', 1)->get(),
+        );
+
+        foreach ($arr as $key => $value)
         {
 
-            // Setting values for relationship tables in an array
-            $arr = array(
-                'ticket_id'     => Ticket::latest('id')->first()->get('id'),
-                'category_id'   => Category::where('id', $request->categories)->get(),
-                'priority_id'   => Priority::where('id', $request->priority)->get(),
-                'agent_id'      => Agent::where('id', $request->agent_id)->get(),
-                'status_id'     => Status::where('id', 1)->get(),
-            );
-
-            foreach ($arr as $key => $value)
+            foreach ($value as $ticket)
             {
 
-                foreach ($value as $ticket)
-                {
-
-                    $tickets[$key] = $ticket->id;
-
-                }
+                $tickets[$key] = $ticket->id;
 
             }
-            
-            CategoryTicket::create($tickets);
-            PriorityTicket::create($tickets);
-            AgentTicket::create($tickets);
-            StatusTicket::create($tickets);
 
         }
+        
+        CategoryTicket::create($tickets);
+        PriorityTicket::create($tickets);
+        AgentTicket::create($tickets);
+        StatusTicket::create($tickets);
+
 
         return redirect('/');
 
