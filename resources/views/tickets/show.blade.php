@@ -6,7 +6,7 @@
                     <h1 class="font-semibold text-2xl">{{ $ticket->subject }}</h1>
                     <div class="flex flex-row items-center space-x-4">
                         @if ($ticket->files)
-                            <a href="{{ asset('storage/' . $ticket->files) }}"
+                            <a href="{{ $ticket->files }}"
                                 class="flex flex-row items-center space-x-2 p-2 bg-gray-200 text-gray-600 rounded-md" target="_blank" rel="noopener noreferrer">
                                 <i class="fa-solid fa-file"></i>
                                 <span class="text-sm">
