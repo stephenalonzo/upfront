@@ -64,4 +64,7 @@
             </table>
         </div>
     </div>
+    <div class="mt-6 p-4">
+        {{ $tickets->links() }}
+    </div>
 </x-layout>
