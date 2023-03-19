@@ -37,14 +37,14 @@ class TicketController extends Controller
             if ($role->title == 'Agent')
             {
                 return view('tickets.index', [
-                    'tickets' => Ticket::where('agent_id', auth()->id())->get(),
+                    'tickets' => Ticket::latest()->where('agent_id', auth()->id())->paginate(10),
                     'users'   => User::find(auth()->user()->id)
                 ]);
 
             } else {
 
                 return view('tickets.index', [
-                    'tickets' => Ticket::latest()->where('email', auth()->user()->email)->paginate(2),
+                    'tickets' => Ticket::latest()->where('email', auth()->user()->email)->paginate(10),
                     'users'   => User::find(auth()->user()->id)
                 ]);
 
